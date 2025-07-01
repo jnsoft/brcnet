@@ -2,7 +2,38 @@ namespace BrcNet.Pipelines;
 
 public static class Naive
 {
-    public static Dictionary<string, StationSum> Process(string filename)
+    public static Dictionary<string, StationSum> Process_StreamReader(string filename)
+    {
+        var stationSums = new Dictionary<string, StationSum>();
+
+        using (var reader = new StreamReader(filename))
+        {
+            string? line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                StationReading reading = Parser.ParseLine(line);
+                if (!stationSums.TryGetValue(reading.StationId, out var sum))
+                {
+                    stationSums[reading.StationId] = new StationSum
+                    {
+                        StationId = reading.StationId,
+                        Min = reading.Temperature,
+                        Max = reading.Temperature,
+                        Sum = reading.Temperature,
+                        Count = 1
+                    };
+                }
+                else
+                {
+                    stationSums[reading.StationId] = Aggregate(reading, sum);
+                }
+            }
+        }
+        PrintResults(stationSums);
+        return stationSums; 
+    }
+
+    public static Dictionary<string, StationSum> Process_ReadLines(string filename)
     {
         var stationSums = new Dictionary<string, StationSum>();
 

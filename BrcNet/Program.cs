@@ -24,9 +24,9 @@ class Program
         }
 
         Stopwatch sw = Stopwatch.StartNew();
-        Naive.Process_ReadLines(filename);
+        //Naive.Process_ReadLines(filename);
         sw.Stop();
-        Console.WriteLine($"\nProcess_ReadLines completed in {sw.ElapsedMilliseconds} ms");
+        //Console.WriteLine($"\nProcess_ReadLines completed in {sw.ElapsedMilliseconds} ms");
         sw.Reset();
         sw.Start();
         Naive.Process_StreamReader(filename);

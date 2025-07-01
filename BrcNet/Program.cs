@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using BrcNet.Pipelines;
 
 namespace BrcNet;
 
@@ -21,10 +23,10 @@ class Program
             return;
         }
 
-        foreach (var line in File.ReadLines(filename))
-        {
-            Console.WriteLine(Parser.ParseLine(line));
-        }
+        Stopwatch sw = Stopwatch.StartNew();
+        Naive.Process(filename);
+        sw.Stop();
+        Console.WriteLine($"\nProcessing completed in {sw.ElapsedMilliseconds} ms");
     }
 
 }

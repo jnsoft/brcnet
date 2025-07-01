@@ -2,6 +2,18 @@ namespace BrcNet;
 
 public static class Parser
 {
+    public static StationReading ParseLine2(string line)
+    {
+        var parts = line.Split(';');
+        double temp = double.Parse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture);
+        
+            return new StationReading
+            {
+                StationId = parts[0],
+                Temperature = (int)(temp * 10)
+            };
+    }
+
     public static StationReading ParseLine(string line)
     {
         var parts = line.Split(';');

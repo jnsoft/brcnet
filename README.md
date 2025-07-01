@@ -37,3 +37,8 @@ dotnet-trace report --trace-file trace.nettrace
 drop file into:  
 https://www.speedscope.app/ 
 
+### Versions
+
+0.1: parse line by line with StreamReader, use line.Split and double.TryParse when parsing lines, store temp as int until avg is needed
+
+

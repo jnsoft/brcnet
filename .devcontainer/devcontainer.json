@@ -11,7 +11,9 @@
     "vscode": {
       "extensions": [
         "ms-dotnettools.csharp",
-        "ms-vscode.powershell"
+        "ms-vscode.powershell",
+        "ms-dotnettools.csdevkit",
+        "GitHub.copilot"
       ]
     }
   },

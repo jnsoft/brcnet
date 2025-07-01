@@ -1,10 +1,10 @@
 ﻿using System;
 
-const int NO_OF_LOCATIONS = 10;
+const int MIN_NO_OF_LOCATIONS = 10;
 
-if (args.Length != 2)
+if (args.Length != 3)
 {
-    Console.WriteLine("Usage: dotnet run <number_of_lines> <filename>");
+    Console.WriteLine("Usage: dotnet run <number_of_lines> <number_of stations> <filename>");
     return;
 }
 
@@ -14,7 +14,14 @@ if (!int.TryParse(args[0], out int numberOfLines) || numberOfLines < 1)
     return;
 }
 
-string filename = args[1];
+if (!int.TryParse(args[1], out int numberOfStations) || numberOfStations < MIN_NO_OF_LOCATIONS)
+{
+    Console.WriteLine($"Please provide a valid positive integer for the number of stations (minimum {MIN_NO_OF_LOCATIONS}).");
+    return;
+}
+
+
+string filename = args[2];
 
 if (string.IsNullOrWhiteSpace(filename))
 {
@@ -28,7 +35,7 @@ else
 
     
 
-var locations = getLocations(NO_OF_LOCATIONS);
+var locations = getLocations(numberOfStations);
 var random = new Random();
 
 try
@@ -37,7 +44,7 @@ try
     {
         for (int i = 1; i <= numberOfLines; i++)
         {
-            string location = locations[random.Next(0, NO_OF_LOCATIONS)];
+            string location = locations[random.Next(0, numberOfStations)];
             string temp = getTemp();
             string rowData = $"{location};{temp}";
             writer.Write(rowData);

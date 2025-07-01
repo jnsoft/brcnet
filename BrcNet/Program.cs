@@ -1,18 +1,30 @@
-﻿if (args.Length != 1)
-{
-    Console.WriteLine("Usage: dotnet run <filename>");
-    return;
-}
+﻿using System;
+using System.IO;
 
-string filename = args[0];
+namespace BrcNet;
 
-if (!File.Exists(filename))
+class Program
 {
-    Console.WriteLine($"File not found: {filename}");
-    return;
-}
+    static void Main(string[] args)
+    {
+        if (args.Length != 1)
+        {
+            Console.WriteLine("Usage: dotnet run <filename>");
+            return;
+        }
 
-foreach (var line in File.ReadLines(filename))
-{
-    Console.WriteLine(line);
+        string filename = args[0];
+
+        if (!File.Exists(filename))
+        {
+            Console.WriteLine($"File not found: {filename}");
+            return;
+        }
+
+        foreach (var line in File.ReadLines(filename))
+        {
+            Console.WriteLine(Parser.ParseLine(line));
+        }
+    }
+
 }

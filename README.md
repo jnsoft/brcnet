@@ -29,7 +29,9 @@ dotnet publish ./BrcNet/BrcNet.csproj -c Release -p:DebugType=None
 ```
 dotnet build ./BrcNet/BrcNet.csproj -c Release
 
-dotnet-trace collect -- dotnet run -c Release --project ./BrcNet/BrcNet.csproj -- ./GenerateFile/.testfiles/output_1_000_000.txt
+dotnet-trace collect --output mytrace.nettrace -- dotnet run -c Release --project ./BrcNet/BrcNet.csproj -- ./GenerateFile/.testfiles/output_1_000_000.txt
+
+dotnet-trace report --trace-file trace.nettrace
 ```
 
 drop file into:  

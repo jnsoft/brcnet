@@ -32,6 +32,55 @@ public record class Result
         }
     }
 
+
+    public override string ToString()
+    {
+        return $"Processed {stations.Count} stations.";
+    }
+
+    public void PrintResults()
+    {
+        Console.WriteLine("StationId\tMin\tMax\tSum\tCount");
+        Console.WriteLine("---------------------------------------");
+
+        foreach (var sum in stations.Values.OrderBy(s => s.StationId))
+        {
+            Console.WriteLine(sum);
+        }
+    }
+}
+
+public record class ByteResult
+{
+    readonly Dictionary<int, ByteStation> stations = [];
+    public void Add(ByteStationReading reading)
+    {
+        if (!stations.TryGetValue(reading.HashCode_simple, out var station))
+        {
+            stations[reading.HashCode_simple] = new ByteStation
+            {
+                StationId = reading.StationId,
+                Min = reading.Temperature,
+                Max = reading.Temperature,
+                Sum = reading.Temperature,
+                Count = 1
+            };
+        }
+        else
+        {
+            station.Sum += reading.Temperature;
+            if (station.Min > reading.Temperature)
+            {
+                station.Min = reading.Temperature;
+            }
+            if (station.Max < reading.Temperature)
+            {
+                station.Max = reading.Temperature;
+            }
+            station.Count++;
+        }
+    }
+
     public override string ToString()
     {
         return $"Processed {stations.Count} stations.";

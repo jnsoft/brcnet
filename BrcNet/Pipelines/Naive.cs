@@ -6,9 +6,9 @@ public static class Naive
 {
     const int BUFFER_SIZE_1MB = 1024 * 1024;
 
-    public static Result Process_FileStream(string filename, bool verbose = false)
+    public static ByteResult Process_FileStream(string filename, bool verbose = false)
     {
-        Result result = new();
+        ByteResult result = new();
 
         byte[] buffer = new byte[BUFFER_SIZE_1MB];
         int bytesRead;
@@ -34,8 +34,7 @@ public static class Naive
                         var lineSpan = span.Slice(lineStartIdx, lineEndIdx - lineStartIdx);
                         if (!lineSpan.IsEmpty)
                         {
-                            string line = Encoding.UTF8.GetString(lineSpan);
-                            StationReading reading = Parser.ParseLine(line);
+                            ByteStationReading reading = Parser.ParseLine(lineSpan);
                             result.Add(reading);
                         }
                         lineStartIdx = i + 1; // Move to next line start
@@ -56,9 +55,8 @@ public static class Naive
                 var lineSpan = buffer.AsSpan(0, leftover);
                 if (!lineSpan.IsEmpty)
                 {
-                    string line = Encoding.UTF8.GetString(lineSpan);
-                    StationReading reading = Parser.ParseLine(line);
-                    result.Add(reading);
+                    ByteStationReading reading = Parser.ParseLine(lineSpan);
+                        result.Add(reading);
                 }
             }
         }

@@ -6,6 +6,10 @@ public static class Parser
 {
     public const byte ASCII_NEWLINE = 10; // '\n';
     public const byte ASCII_CARRIAGE_RETURN = 13; // '\r'
+    public const byte ASCII_SEMICOLON = 59; // ';'
+    public const byte ASCII_MINUS = 45; // '-'
+    public const byte ASCII_ZERO = 48; // '0'
+    public const byte ASCII_DOT = 46; // '.'
 
     public static StationReading ParseLine2(string line)
     {
@@ -37,23 +41,44 @@ public static class Parser
         }
     }
 
-    public static StationReading ParseLine(ReadOnlySpan<byte> line)
+    public static ByteStationReading ParseLine(ReadOnlySpan<byte> line)
     {
-        
-        string stationId = Encoding.UTF8.GetString(span.Slice(lineStartIdx, semicolonIndex));
-        string tempStr = Encoding.UTF8.GetString(span.Slice(lineStartIdx + semicolonIndex + 1, lineEndIdx - lineStartIdx - semicolonIndex - 1));
+        int splitIx = 0;
+        bool negative = false;
 
-        if (double.TryParse(tempStr, NumberStyles.Float, CultureInfo.InvariantCulture, out double temp))
+        while (splitIx < line.Length && line[splitIx] != ASCII_SEMICOLON)
         {
-            return new StationReading
+            splitIx++;
+        }
+
+        ReadOnlySpan<byte> stationIdBytes = line[..splitIx];
+
+        if (line[splitIx + 1] == ASCII_MINUS)
+        {
+            negative = true;
+            splitIx++;
+        }
+
+        int fac = 1;
+        int n = 0;
+        for (int i = line.Length - 1; i > splitIx; i--)
+        {
+            if (line[i] != ASCII_DOT)
             {
-                StationId = stationId,
-                Temperature = (int)Math.Round(temp * 10)
-            };
+                n += fac * (ASCII_ZERO - line[i]);
+                fac *= 10;
+            }
         }
-        else
+
+        if (negative)
         {
-            throw new FormatException($"Invalid temperature value: {tempStr}");
+            n = -n;
         }
+
+        return new ByteStationReading
+        {
+            StationId = stationIdBytes.ToArray(),
+            Temperature = n
+        };
     }
 }

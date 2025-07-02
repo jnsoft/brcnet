@@ -1,8 +1,8 @@
 namespace BrcNet.Entities;
 
-public record struct StationSum
+public record struct Station
 {
-    public StationSum()
+    public Station()
     {
         StationId = string.Empty;
         Sum = 0;

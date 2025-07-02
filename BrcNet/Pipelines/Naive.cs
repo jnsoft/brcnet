@@ -4,151 +4,135 @@ namespace BrcNet.Pipelines;
 
 public static class Naive
 {
-    public static Dictionary<string, StationSum> Process_FileStream(string filename)
+    const int BUFFER_SIZE_1MB = 1024 * 1024;
+    public static Dictionary<string, Station> Process_FileStream(string filename, bool verbose = false)
     {
-        var stationSums = new Dictionary<string, StationSum>();
-        const int bufferSize = 1024 * 1024; // 1MB buffer
-        byte[] buffer = new byte[bufferSize];
+        var stations = new Dictionary<string, Station>();
+
+        byte[] buffer = new byte[BUFFER_SIZE_1MB];
         int bytesRead;
-        List<byte> lineBuffer = new List<byte>(1024);
+        int lineStart = 0;
+        int lineLength = 0;
 
-        using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize))
+        using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, BUFFER_SIZE_1MB))
         {
-            while ((bytesRead = fs.Read(buffer, 0, buffer.Length)) > 0)
+            int leftover = 0;
+            while ((bytesRead = fs.Read(buffer, leftover, buffer.Length - leftover)) > 0)
             {
-                for (int i = 0; i < bytesRead; i++)
-                {
-                byte b = buffer[i];
-                if (b == (byte)'\n')
-                {
-                    // Handle CRLF
-                    if (lineBuffer.Count > 0 && lineBuffer[lineBuffer.Count - 1] == (byte)'\r')
-                        lineBuffer.RemoveAt(lineBuffer.Count - 1);
+                int totalBytes = leftover + bytesRead;
+                Span<byte> span = buffer.AsSpan(0, totalBytes);
+                int lineStartIdx = 0;
 
-                    string line = Encoding.UTF8.GetString(lineBuffer.ToArray());
-                    if (!string.IsNullOrEmpty(line))
+                for (int i = 0; i < totalBytes; i++)
+                {
+                    if (span[i] == (byte)'\n')
                     {
-                        StationReading reading = Parser.ParseLine(line);
-                        if (!stationSums.TryGetValue(reading.StationId, out var sum))
+                        int lineEndIdx = i;
+                        // Handle CRLF
+                        if (lineEndIdx > lineStartIdx && span[lineEndIdx - 1] == (byte)'\r')
+                            lineEndIdx--;
+
+                        var lineSpan = span.Slice(lineStartIdx, lineEndIdx - lineStartIdx);
+                        if (!lineSpan.IsEmpty)
                         {
-                            stationSums[reading.StationId] = new StationSum
-                            {
-                                StationId = reading.StationId,
-                                Min = reading.Temperature,
-                                Max = reading.Temperature,
-                                Sum = reading.Temperature,
-                                Count = 1
-                            };
+                            string line = Encoding.UTF8.GetString(lineSpan);
+                            StationReading reading = Parser.ParseLine(line);
+                            addReading(stations, reading);
                         }
-                        else
-                        {
-                            stationSums[reading.StationId] = Aggregate(reading, sum);
-                        }
+                        lineStartIdx = i + 1; // Move to next line start
                     }
-                    lineBuffer.Clear();
                 }
-                else
+
+                // Move leftover bytes to the beginning of the buffer
+                leftover = totalBytes - lineStartIdx;
+                if (leftover > 0)
                 {
-                    lineBuffer.Add(b);
+                    span.Slice(lineStartIdx, leftover).CopyTo(buffer);
                 }
+
             }
-        }
-        // Handle last line if file does not end with newline
-        if (lineBuffer.Count > 0)
-        {
-            string line = Encoding.UTF8.GetString(lineBuffer.ToArray());
-            if (!string.IsNullOrEmpty(line))
+            // Handle last line if file does not end with newline
+            if (leftover > 0)
             {
-                StationReading reading = Parser.ParseLine(line);
-                if (!stationSums.TryGetValue(reading.StationId, out var sum))
+                var lineSpan = buffer.AsSpan(0, leftover);
+                if (!lineSpan.IsEmpty)
                 {
-                    stationSums[reading.StationId] = new StationSum
-                    {
-                        StationId = reading.StationId,
-                        Min = reading.Temperature,
-                        Max = reading.Temperature,
-                        Sum = reading.Temperature,
-                        Count = 1
-                    };
-                }
-                else
-                {
-                    stationSums[reading.StationId] = Aggregate(reading, sum);
+                    string line = Encoding.UTF8.GetString(lineSpan);
+                    StationReading reading = Parser.ParseLine(line);
+                    addReading(stations, reading);
                 }
             }
         }
-    }
-        PrintResults(stationSums);
-        return stationSums; 
+
+        PrintResults(stations, verbose);
+        return stations;
     }
 
-    public static Dictionary<string, StationSum> Process_StreamReader(string filename)
+    public static Dictionary<string, Station> Process_StreamReader(string filename, bool verbose = false)
     {
-        var stationSums = new Dictionary<string, StationSum>();
+        var stations = new Dictionary<string, Station>();
 
-        using (var reader = new StreamReader(filename))
+        using (var reader = new StreamReader(filename, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024 * 1024))
         {
             string? line;
             while ((line = reader.ReadLine()) != null)
             {
                 StationReading reading = Parser.ParseLine(line);
-                if (!stationSums.TryGetValue(reading.StationId, out var sum))
-                {
-                    stationSums[reading.StationId] = new StationSum
-                    {
-                        StationId = reading.StationId,
-                        Min = reading.Temperature,
-                        Max = reading.Temperature,
-                        Sum = reading.Temperature,
-                        Count = 1
-                    };
-                }
-                else
-                {
-                    stationSums[reading.StationId] = Aggregate(reading, sum);
-                }
+                addReading(stations, reading);
             }
         }
-        PrintResults(stationSums);
-        return stationSums;
+        PrintResults(stations, verbose);
+        return stations;
     }
 
-    public static Dictionary<string, StationSum> Process_ReadLines(string filename)
+    public static Dictionary<string, Station> Process_ReadLines(string filename, bool verbose = false)
     {
-        var stationSums = new Dictionary<string, StationSum>();
+        var stationSums = new Dictionary<string, Station>();
 
         foreach (var line in File.ReadLines(filename))
-        {
-            StationReading reading = Parser.ParseLine(line);
-            if (!stationSums.TryGetValue(reading.StationId, out var sum))
-            {
-                stationSums[reading.StationId] = new StationSum
-                {
-                    StationId = reading.StationId,
-                    Min = reading.Temperature,
-                    Max = reading.Temperature,
-                    Sum = reading.Temperature,
-                    Count = 1
-                };
-            }
-            else
-            {
-                stationSums[reading.StationId] = Aggregate(reading, sum);
-            }
-        }
-        PrintResults(stationSums);
+            addReading(stationSums, Parser.ParseLine(line));
+            
+        PrintResults(stationSums, verbose);
         return stationSums; 
     }
 
-    public static void PrintResults(Dictionary<string, StationSum> stationSums)
+    public static void PrintResults(Dictionary<string, Station> stationSums, bool verbose = false)
     {
+        if (!verbose)
+        {
+            Console.WriteLine($"Processed {stationSums.Count} stations.");
+            return;
+        }
+
+        Console.WriteLine("StationId\tMin\tMax\tSum\tCount");
+        Console.WriteLine("---------------------------------------");
+    
         foreach (var sum in stationSums.Values.OrderBy(s => s.StationId))
         {
             Console.WriteLine(sum);
         }
     } 
     
-    public static StationSum Aggregate(StationReading reading, StationSum sum)
+    private static void addReading(Dictionary<string, Station> stations, StationReading reading)
+    {
+        if (!stations.TryGetValue(reading.StationId, out var station))
+        {
+            stations[reading.StationId] = new Station
+            {
+                StationId = reading.StationId,
+                Min = reading.Temperature,
+                Max = reading.Temperature,
+                Sum = reading.Temperature,
+                Count = 1
+            };
+        }
+        else
+        {
+            stations[reading.StationId] = aggregate(reading, station);
+        }
+    }
+
+    private static Station aggregate(StationReading reading, Station sum)
     {
         sum.Sum += reading.Temperature;
         if (sum.Min > reading.Temperature)

@@ -26,12 +26,15 @@ class Program
         Stopwatch sw = Stopwatch.StartNew();
         Naive.Process_FileStream(filename);
         sw.Stop();
-        Console.WriteLine($"\nProcess_FileStream completed in {sw.ElapsedMilliseconds} ms");
-        sw.Reset();
-        sw.Start();
+        Console.WriteLine($"Process_FileStream completed in {sw.ElapsedMilliseconds} ms");
+        sw.Restart();
         Naive.Process_StreamReader(filename);
         sw.Stop();
-        Console.WriteLine($"\nProcess_StreamReader completed in {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine($"Process_StreamReader completed in {sw.ElapsedMilliseconds} ms");
+        sw.Restart();
+        Naive.Process_ReadLines(filename);
+        sw.Stop();
+        Console.WriteLine($"Process_ReadLines completed in {sw.ElapsedMilliseconds} ms");
     }
 
 }

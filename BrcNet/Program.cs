@@ -23,18 +23,23 @@ class Program
             return;
         }
 
+
+
         Stopwatch sw = Stopwatch.StartNew();
-        Naive.Process_FileStream(filename);
+        var res1 = Naive.Process_FileStream(filename);
         sw.Stop();
         Console.WriteLine($"Process_FileStream completed in {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine(res1);
         sw.Restart();
-        Naive.Process_StreamReader(filename);
+        var res2 = Naive.Process_StreamReader(filename);
         sw.Stop();
         Console.WriteLine($"Process_StreamReader completed in {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine(res2);
         sw.Restart();
-        Naive.Process_ReadLines(filename);
+        var res3 = Naive.Process_ReadLines(filename);
         sw.Stop();
         Console.WriteLine($"Process_ReadLines completed in {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine(res3);
     }
 
 }

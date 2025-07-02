@@ -40,7 +40,7 @@ var random = new Random();
 
 try
 {
-    using (var writer = new StreamWriter(filename))
+    using (var writer = new StreamWriter(filename, false, Encoding.UTF8))
     {
         for (int i = 1; i <= numberOfLines; i++)
         {

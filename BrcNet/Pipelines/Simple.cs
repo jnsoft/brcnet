@@ -11,7 +11,7 @@ public static class Simple
 
         byte[] buffer = new byte[BUFFER_SIZE];
         int bytesRead;
-        byte[] leftover = Array.Empty<byte>();
+        byte[] leftover = [];
 
         using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, BUFFER_SIZE))
         {
@@ -35,7 +35,7 @@ public static class Simple
 
                 // Prepare leftover for next round
                 int nextLeftoverLen = totalLength - (lastNewline + 1);
-                leftover = nextLeftoverLen > 0 ? combined[(lastNewline + 1)..] : Array.Empty<byte>();
+                leftover = nextLeftoverLen > 0 ? combined[(lastNewline + 1)..] : [];
 
                 // Pass the complete lines to a task for parsing
                 var parseBuffer = combined.AsSpan(0, lastNewline + 1).ToArray();
@@ -54,7 +54,7 @@ public static class Simple
             }
         }
 
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll([.. tasks]);
         
         return result;
     }

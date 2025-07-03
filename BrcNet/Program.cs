@@ -26,6 +26,8 @@ class Program
 
 
         Stopwatch sw = Stopwatch.StartNew();
+        if (false)
+        { 
         var res1 = Naive.Process_FileStream(filename);
         sw.Stop();
         Console.WriteLine($"Process_FileStream completed in {sw.ElapsedMilliseconds} ms");
@@ -42,9 +44,11 @@ class Program
         sw.Stop();
         Console.WriteLine($"Process_ReadLines completed in {sw.ElapsedMilliseconds} ms");
         Console.WriteLine(res3);
+    }
 
         sw.Restart();
         var res4 = Simple.Process(filename);
+        res4.PrintResults();
         sw.Stop();
         Console.WriteLine($"Simple completed in {sw.ElapsedMilliseconds} ms");
         Console.WriteLine(res4);
@@ -52,9 +56,9 @@ class Program
         if (false)
         {
             Console.WriteLine("Results:");
-            res1.PrintResults();
-            res2.PrintResults();
-            res3.PrintResults();
+            //res1.PrintResults();
+            //res2.PrintResults();
+            //res3.PrintResults();
             res4.PrintResults();
         }
     }

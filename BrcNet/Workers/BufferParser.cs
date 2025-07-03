@@ -14,7 +14,7 @@ public static class BufferParser
                 if (lineEndIdx > lineStartIdx && span[lineEndIdx - 1] == Parser.ASCII_CARRIAGE_RETURN)
                     lineEndIdx--;
 
-                var lineSpan = span.Slice(lineStartIdx, lineEndIdx - lineStartIdx);
+                var lineSpan = span[lineStartIdx..lineEndIdx];
                 if (!lineSpan.IsEmpty)
                 {
                     var reading = Parser.ParseLine(lineSpan);

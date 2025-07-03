@@ -23,10 +23,11 @@ class Program
             return;
         }
 
+        int processorCount = Environment.ProcessorCount;
 
 
         Stopwatch sw = Stopwatch.StartNew();
-        if (false)
+        if (true)
         { 
         var res1 = Naive.Process_FileStream(filename);
         sw.Stop();
@@ -48,10 +49,31 @@ class Program
 
         sw.Restart();
         var res4 = Simple.Process(filename);
-        res4.PrintResults();
+        //res4.PrintResults();
         sw.Stop();
         Console.WriteLine($"Simple completed in {sw.ElapsedMilliseconds} ms");
         Console.WriteLine(res4);
+
+        sw.Restart();
+        var res5 = MemoryMapped.Process(filename, processorCount);
+        //res5.PrintResults();
+        sw.Stop();
+        Console.WriteLine($"MemoryMapped completed in {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine(res5);
+
+        sw.Restart();
+        var res6 = MemoryMapped.Process(filename, processorCount*2);
+        //res6.PrintResults();
+        sw.Stop();
+        Console.WriteLine($"MemoryMapped completed in {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine(res6);
+
+        sw.Restart();
+        var res7 = MemoryMapped.Process(filename, processorCount*16);
+        //res7.PrintResults();
+        sw.Stop();
+        Console.WriteLine($"MemoryMapped completed in {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine(res7);
 
         if (false)
         {

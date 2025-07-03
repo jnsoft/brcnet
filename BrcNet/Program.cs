@@ -30,16 +30,33 @@ class Program
         sw.Stop();
         Console.WriteLine($"Process_FileStream completed in {sw.ElapsedMilliseconds} ms");
         Console.WriteLine(res1);
+
         sw.Restart();
         var res2 = Naive.Process_StreamReader(filename);
         sw.Stop();
         Console.WriteLine($"Process_StreamReader completed in {sw.ElapsedMilliseconds} ms");
         Console.WriteLine(res2);
+
         sw.Restart();
         var res3 = Naive.Process_ReadLines(filename);
         sw.Stop();
         Console.WriteLine($"Process_ReadLines completed in {sw.ElapsedMilliseconds} ms");
         Console.WriteLine(res3);
+
+        sw.Restart();
+        var res4 = Simple.Process(filename);
+        sw.Stop();
+        Console.WriteLine($"Simple completed in {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine(res4);
+
+        if (false)
+        {
+            Console.WriteLine("Results:");
+            res1.PrintResults();
+            res2.PrintResults();
+            res3.PrintResults();
+            res4.PrintResults();
+        }
     }
 
 }

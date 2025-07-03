@@ -1,6 +1,6 @@
 namespace BrcNet.Entities;
 
-public record class Result
+public class Result
 {
     readonly Dictionary<string, Station> stations = [];
 
@@ -50,9 +50,9 @@ public record class Result
     }
 }
 
-public record class ByteResult
+public class ByteResult
 {
-    readonly Dictionary<int, ByteStation> stations = [];
+    readonly ConcurrentDictionary<int, ByteStation> stations = [];
     public void Add(ByteStationReading reading)
     {
         if (!stations.TryGetValue(reading.HashCode_simple, out var station))
@@ -91,7 +91,7 @@ public record class ByteResult
         Console.WriteLine("StationId\tMin\tMax\tSum\tCount");
         Console.WriteLine("---------------------------------------");
 
-        foreach (var sum in stations.Values.OrderBy(s => s.StationId))
+        foreach (var sum in stations.Values.OrderBy(s => s.StationName))
         {
             Console.WriteLine(sum);
         }

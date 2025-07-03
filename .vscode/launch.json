@@ -9,8 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/BrcNet/bin/Debug/net10.0/BrcNet.dll",
-            // "args": ["${workspaceFolder}/.testfiles/output_10.txt"], 
+             //"args": ["${workspaceFolder}/.testfiles/output_10.txt"], 
             "args": ["${workspaceFolder}/.testfiles/output_1_000_000.txt"], 
+            //"args": ["${workspaceFolder}/.testfiles/output_1_000_000_b.txt"], 
             "cwd": "${workspaceFolder}/BrcNet",
             "preLaunchTask": "build"
         }

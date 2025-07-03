@@ -65,7 +65,7 @@ public static class Parser
         {
             if (line[i] != ASCII_DOT)
             {
-                n += fac * (ASCII_ZERO - line[i]);
+                n += fac * (line[i]- ASCII_ZERO);
                 fac *= 10;
             }
         }

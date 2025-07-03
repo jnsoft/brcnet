@@ -1,6 +1,6 @@
 namespace BrcNet.Entities;
 
-public record struct Station
+public class Station
 {
     public Station()
     {
@@ -15,15 +15,15 @@ public record struct Station
     public int Max { get; set; }
     public int Count { get; set; }
 
-    public readonly double AverageTemperature => Count > 0 ? (double)Sum / (Count * 10) : 0.0;
+    public double AverageTemperature => Count > 0 ? (double)Sum / (Count * 10) : 0.0;
 
-    public override readonly string ToString()
+    public override string ToString()
     {
         return $"{StationId}={(double)Min / 10}/{AverageTemperature:F1}/{(double)Max / 10}";
     }
 }
 
-public struct ByteStation
+public class ByteStation
 {
     public ByteStation()
     {
@@ -53,7 +53,7 @@ public struct ByteStation
         }
     }
 
-    public readonly double AverageTemperature => Count > 0 ? (double)Sum / (Count * 10) : 0.0;
+    public double AverageTemperature => Count > 0 ? (double)Sum / (Count * 10) : 0.0;
 
     public override string ToString()
     {

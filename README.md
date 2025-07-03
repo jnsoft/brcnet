@@ -15,6 +15,7 @@ dotnet publish ./GenerateFile/GenerateFile.csproj -c Release -p:DebugType=None
 ./GenerateFile/bin/Release/net10.0/publish/GenerateFile 10000 1000 .testfiles/output_10_000.txt
 ./GenerateFile/bin/Release/net10.0/publish/GenerateFile 1000000 10000 .testfiles/output_1_000_000.txt
 ./GenerateFile/bin/Release/net10.0/publish/GenerateFile 10000000 10000 .testfiles/output_10_000_000.txt
+./GenerateFile/bin/Release/net10.0/publish/GenerateFile 1000000 20 .testfiles/output_1_000_000_b.txt
 ```
 
 ### Test run
@@ -39,6 +40,7 @@ https://www.speedscope.app/
 
 ### Versions
 
-0.1: parse line by line with StreamReader, use line.Split and double.TryParse when parsing lines, store temp as int until avg is needed
+0.1: parse line by line with StreamReader, use line.Split and double.TryParse when parsing lines, store temp as int until avg is needed. Results 10M = 2.1-2.4 seconds
+0.2: using buffered FileStream and custom byte parsing using spans. Results 10M = 0.9 seconds
 
 

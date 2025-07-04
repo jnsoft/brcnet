@@ -2,9 +2,46 @@ namespace BrcNet.Pipelines;
 
 public static class SimpleLinq
 {
+    public static SortedDictionary<string, ResultRow> AggregateMeasurements2(string filePath)
+    {
+        var results = File.ReadLines(filePath)
+            .AsParallel()
+            .Select(line => new Measurement(line.Split(';')))
+            .GroupBy(m => m.Station)
+            .ToList();
+
+        var dict = new SortedDictionary<string, ResultRow>();
+        var dictLock = new object();
+
+        Parallel.ForEach(results, group =>
+        {
+            var agg = group.Aggregate(
+                new MeasurementAggregator(),
+                (a, m) =>
+                {
+                    a.Min = Math.Min(a.Min, m.Value);
+                    a.Max = Math.Max(a.Max, m.Value);
+                    a.Sum += m.Value;
+                    a.Count++;
+                    return a;
+                }
+            );
+
+            double avg = Math.Round(agg.Sum * 10.0) / 10.0 / agg.Count;
+            var row = new ResultRow(agg.Min, avg, agg.Max);
+
+            lock (dictLock)
+            {
+                dict[group.Key] = row;
+            }
+        });
+
+        return dict;
+}
     public static SortedDictionary<string, ResultRow> AggregateMeasurements(string filePath)
     {
         return File.ReadLines(filePath)
+            .AsParallel()
             .Select(line => new Measurement(line.Split(';')))
             .GroupBy(m => m.Station)
             .Aggregate(

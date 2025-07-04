@@ -44,7 +44,7 @@ public static class Parser
     public static ByteStationReading ParseLine(ReadOnlySpan<byte> line)
     {
         int splitIx = 0;
-        bool negative = false;
+        int negative = 0;
 
         while (splitIx < line.Length && line[splitIx] != ASCII_SEMICOLON)
         {
@@ -55,13 +55,12 @@ public static class Parser
 
         if (line[splitIx + 1] == ASCII_MINUS)
         {
-            negative = true;
-            splitIx++;
+            negative = 1;
         }
 
         int fac = 1;
         int n = 0;
-        for (int i = line.Length - 1; i > splitIx; i--)
+        for (int i = line.Length - 1; i > splitIx+negative; i--)
         {
             if (line[i] != ASCII_DOT)
             {
@@ -70,7 +69,7 @@ public static class Parser
             }
         }
 
-        if (negative)
+        if (negative > 0)
         {
             n = -n;
         }

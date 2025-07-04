@@ -62,18 +62,15 @@ class Program
         Console.WriteLine(res5);
 
         sw.Restart();
-        var res6 = MemoryMapped.Process(filename, processorCount*2);
+        var res6 = SimpleLinq.AggregateMeasurements(filename);
         //res6.PrintResults();
         sw.Stop();
-        Console.WriteLine($"MemoryMapped completed in {sw.ElapsedMilliseconds} ms");
-        Console.WriteLine(res6);
+        Console.WriteLine($"SimpleLinq completed in {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine(res6.Count);
+        //foreach (var kvp in res6.OrderBy(m => m.Key))
+        //    Console.WriteLine($"{kvp.Key}={kvp.Value}");
 
-        sw.Restart();
-        var res7 = MemoryMapped.Process(filename, processorCount*16);
-        //res7.PrintResults();
-        sw.Stop();
-        Console.WriteLine($"MemoryMapped completed in {sw.ElapsedMilliseconds} ms");
-        Console.WriteLine(res7);
+  
 
         if (false)
         {

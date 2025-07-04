@@ -52,6 +52,6 @@ public static class SimpleLinq
         public double Max { get; } = max;
 
         public override string ToString()
-            => $"Min: {Min:F1}, Avg: {Avg:F1}, Max: {Max:F1}";
+            => $"{Min:F1}/{Avg:F1}/{Max:F1}";
     }
 }

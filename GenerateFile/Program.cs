@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 
 const int MIN_NO_OF_LOCATIONS = 10;
 
@@ -40,7 +42,7 @@ var random = new Random();
 
 try
 {
-    using (var writer = new StreamWriter(filename, false, Encoding.UTF8))
+    using (var writer = new StreamWriter(filename, false, new UTF8Encoding(false)))
     {
         for (int i = 1; i <= numberOfLines; i++)
         {
